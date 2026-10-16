@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+  <!-- Menu-bar template image, drawn on the 18 pt pixel grid: four waveform bars and an
+       I-beam cursor. Black with alpha; macOS recolours template images itself. -->
+  <g fill="#000000">
+    <rect x="1"  y="7"  width="2" height="4"  rx="1"/>
+    <rect x="4"  y="4"  width="2" height="10" rx="1"/>
+    <rect x="7"  y="2"  width="2" height="14" rx="1"/>
+    <rect x="10" y="6"  width="2" height="6"  rx="1"/>
+    <rect x="14" y="3"  width="2" height="12" rx="1"/>
+    <rect x="13" y="2"  width="4" height="1.5" rx="0.75"/>
+    <rect x="13" y="14.5" width="4" height="1.5" rx="0.75"/>
+  </g>
+</svg>

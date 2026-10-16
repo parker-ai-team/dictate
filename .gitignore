@@ -1,0 +1,6 @@
+build/
+test/*.wav
+test/*.aiff
+*.log
+.DS_Store
+*.icns.bak
