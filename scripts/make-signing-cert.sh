@@ -12,6 +12,16 @@
 # ourselves we know the password; it is a random string stored in the login
 # keychain under service "<bundle id>.signing". The key only signs this app.
 #
+# What this trusts, so you can decide: the keychain never auto-locks, the
+# private key is importable by any app without a prompt (-A), and the
+# certificate is added to YOUR user trust settings as a root trusted for code
+# signing (it cannot sign for other users and is not trusted by Gatekeeper
+# for notarisation). Keychain passwords pass on argv for a few ms.
+# To remove everything:
+#   security delete-keychain ~/Library/Keychains/dictate-signing.keychain-db
+#   security delete-generic-password -s com.parkeraiteam.dictate.signing -a keychain
+#   security remove-trusted-cert <cert.pem>   (export it first from Keychain Access)
+#
 # Safe to re-run (skips if the identity exists). No sudo. If codesign still
 # shows a keychain dialog on first use, click "Always Allow".
 set -euo pipefail

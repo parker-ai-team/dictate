@@ -24,7 +24,7 @@ Measured on an M4 Max with the `large-v3-turbo` model and the engine warm, from 
 ## Requirements
 
 - Apple Silicon Mac (the build targets arm64 and whisper.cpp uses Metal).
-- macOS 13 Ventura or later. Built and tested on macOS 26.
+- macOS 13 or later is what the code compiles for; tested on macOS 26 only, untested below that.
 - Xcode, or just the Command Line Tools: `xcode-select --install`.
 - [Homebrew](https://brew.sh) for whisper.cpp.
 - Optional: an [Anthropic API key](https://console.anthropic.com/) for the cleanup pass. Without one, leave cleanup off and the raw transcript is inserted.
@@ -84,8 +84,9 @@ Fn/Globe works, with two conditions: System Settings > Keyboard > "Press 🌐 ke
 - Audio never leaves the Mac. whisper-server listens on 127.0.0.1 only and is started and stopped by the app.
 - With cleanup on, the only outbound connection is `api.anthropic.com:443`, carrying the transcript text. With cleanup off there is no network connection at all.
 - The log (`~/Library/Logs/Dictate.log`) holds timings and character counts, not text.
+- Insertion goes through the clipboard for 0.4 s. The item is marked transient and concealed (nspasteboard.org convention) so clipboard managers that honour it skip it; tools that do not, or Universal Clipboard, may still see the text in that window. Details in [SECURITY.md](SECURITY.md), including who can read the stored API key.
 
-Verify it: `scripts/make-test-clips.sh` once, then `scripts/verify.sh test/en_short.wav` (and `--no-format`). The script samples every socket of the app and of whisper-server during the run and prints the remote endpoints it saw.
+Spot-check it: `scripts/make-test-clips.sh` once, then `scripts/verify.sh test/en_short.wav` (and `--no-format`). The script samples the sockets of the app and of whisper-server every 50 ms during the run and prints the remote endpoints it saw. A packet capture gives the complete picture.
 
 ## Rebuilding and signing
 
@@ -110,13 +111,15 @@ Ad-hoc signatures change with every build, and macOS ties the Microphone and Acc
 - No streaming: text arrives after you release the key. The cleanup pass is 1-2 s of that; a local formatter can be added behind the `TextFormatter` protocol.
 - Clips under 0.35 s are ignored. Silence inserts nothing.
 - If the app is force-killed, its whisper-server child keeps running (about 1.6 GB RAM). The next launch reuses it; Quit from the menu stops it; or `pkill whisper-server`.
+- Port reuse: if any whisper server already answers on the configured port (default 8178), the app uses it instead of starting its own, including one you started with `--host 0.0.0.0`. The "localhost only" guarantee holds for the server the app starts itself. Change the port in Settings if something else lives there.
+- The optional `scripts/make-signing-cert.sh` adds a self-signed code-signing root to your user trust settings and a never-locking keychain; its header says exactly what and how to remove it.
 - Tested on one machine (M4 Max, macOS 26). Reports from other setups are welcome.
 
 ## Project layout
 
 ```
 Sources/
-  main.swift                 entry; headless modes --selftest, --insert, --hotkey-test, --version
+  main.swift                 entry; headless --selftest and --version (--insert / --hotkey-test only in --debug builds)
   AppDelegate.swift          menu bar, permission polling, wiring
   DictationController.swift  hotkey -> mic -> whisper -> cleanup -> paste
   HotkeyMonitor.swift        CGEvent tap on flagsChanged (modifier keys, Fn)

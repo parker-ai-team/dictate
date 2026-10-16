@@ -5,6 +5,10 @@
 #   scripts/build.sh                 build + install + relaunch
 #   scripts/build.sh --no-install    build only (build/Dictate.app)
 #   scripts/build.sh --no-launch     build + install, do not relaunch
+#   scripts/build.sh --debug ...     also compile the --insert / --hotkey-test
+#                                    headless modes (never for a daily build:
+#                                    they let any local process paste through
+#                                    the app's Accessibility grant)
 #
 # Environment overrides:
 #   DICTATE_BUNDLE_ID       default com.parkeraiteam.dictate
@@ -29,6 +33,11 @@ mkdir -p "$BUILD"
 
 # --- compiler flags ------------------------------------------------------
 EXTRA_FLAGS=()
+if [[ "${1:-}" == "--debug" ]]; then
+  EXTRA_FLAGS+=(-D DICTATE_DEBUG)
+  echo "==> DEBUG build: headless --insert / --hotkey-test compiled in"
+  shift
+fi
 # Some Command Line Tools installs carry a leftover usr/include/swift/module.modulemap
 # next to bridging.modulemap; both define module SwiftBridging and every
 # `import Foundation` fails with "redefinition of module 'SwiftBridging'".

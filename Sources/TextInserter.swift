@@ -30,11 +30,23 @@ enum TextInserter {
         return t + " "
     }
 
+    // Markers from the nspasteboard.org convention. Clipboard managers that
+    // honour it (Paste, Maccy, Raycast and others) skip the item, and
+    // ConcealedType also asks them not to keep a history copy. macOS itself
+    // does not enforce them; the item is still on the general pasteboard for
+    // the restoreDelay window.
+    static let transientType = NSPasteboard.PasteboardType("org.nspasteboard.TransientType")
+    static let concealedType = NSPasteboard.PasteboardType("org.nspasteboard.ConcealedType")
+
     static func insert(_ text: String) {
         let pb = NSPasteboard.general
         let saved = snapshot(pb)
         pb.clearContents()
-        pb.setString(text, forType: .string)
+        let item = NSPasteboardItem()
+        item.setString(text, forType: .string)
+        item.setData(Data(), forType: transientType)
+        item.setData(Data(), forType: concealedType)
+        pb.writeObjects([item])
         postCommandV()
         DispatchQueue.main.asyncAfter(deadline: .now() + restoreDelay) {
             restore(pb, items: saved)

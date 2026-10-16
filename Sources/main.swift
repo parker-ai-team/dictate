@@ -1,10 +1,13 @@
 import Foundation
 import AppKit
 
-// Headless modes used by scripts/verify.sh and for debugging:
+// Headless modes:
 //   Dictate --selftest <wav> [--no-format]   run STT (+ formatter) on a file, print timings
-//   Dictate --insert "<text>"                 paste text into the frontmost app (needs Accessibility)
 //   Dictate --version
+// Debug-only (compiled in by `scripts/build.sh --debug`, never in a normal build,
+// because they let any local process drive our Accessibility grant):
+//   Dictate --insert "<text>"                 paste text into the frontmost app
+//   Dictate --hotkey-test [seconds]           print hotkey press/release events
 let args = CommandLine.arguments
 if args.count >= 3, args[1] == "--selftest" {
     let formatting = !args.contains("--no-format")
@@ -19,6 +22,7 @@ if args.count >= 3, args[1] == "--selftest" {
     sem.wait()
     exit(code)
 }
+#if DICTATE_DEBUG
 if args.count >= 3, args[1] == "--insert" {
     let text = args[2]
     let delay = Double(args.count >= 4 ? args[3] : "0.5") ?? 0.5
@@ -42,6 +46,12 @@ if args.count >= 2, args[1] == "--hotkey-test" {
     monitor.stop()
     exit(ok ? 0 : 1)
 }
+#else
+if args.count >= 2, args[1] == "--insert" || args[1] == "--hotkey-test" {
+    print("\(args[1]) is only available in a debug build (scripts/build.sh --debug)")
+    exit(2)
+}
+#endif
 if args.contains("--version") {
     print("Dictate \(appVersion)")
     exit(0)
