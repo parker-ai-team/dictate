@@ -34,6 +34,7 @@ for s in 16 32 128 256 512; do
 done
 iconutil -c icns "$ICONSET" -o "$RES/AppIcon.icns"
 "$R" Icon/AppIcon.svg "$BUILD/AppIcon-preview-1024.png" 1024
+"$R" Icon/AppIcon.svg "$RES/AppIcon-256.png" 256      # shown in the README
 "$R" Icon/MenuBarTemplate.svg "$RES/MenuBarTemplate.png" 18
 "$R" Icon/MenuBarTemplate.svg "$RES/MenuBarTemplate@2x.png" 36
 echo "==> $RES/AppIcon.icns, $RES/MenuBarTemplate{,@2x}.png, preview $BUILD/AppIcon-preview-1024.png"

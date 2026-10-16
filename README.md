@@ -1,10 +1,12 @@
+<p align="center"><img src="Resources/AppIcon-256.png" width="128" alt="Dictate app icon: a sound waveform flowing into a text cursor on a blue rounded square"></p>
+
 # Dictate
 
 Push-to-talk dictation for macOS that keeps your voice on your Mac.
 
 Hold a key, speak, release. The audio is transcribed locally by [whisper.cpp](https://github.com/ggml-org/whisper.cpp), optionally cleaned up by Claude (text only, with your own API key), and pasted at the cursor in whatever app is in front. English and German are detected automatically; whisper's multilingual model handles other languages too. A free, open alternative to cloud dictation tools, with no account and no per-use cost.
 
-<p><img src="Icon/AppIcon.svg" width="96" alt="Dictate icon"></p>
+<!-- demo GIF: docs/demo.gif, to be recorded -->
 
 ## How it works
 
